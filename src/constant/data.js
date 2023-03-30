@@ -30,6 +30,7 @@ const userData = {
   },
   experience: [
     {
+      id: 1,
       title: "Front-End Engineer",
       company: "iSeller",
       year: "2023",
@@ -37,6 +38,7 @@ const userData = {
       desc: "Helping develop new website revamp and etc",
     },
     {
+      id: 2,
       title: "Internship",
       company: "Adala",
       year: "2022",
