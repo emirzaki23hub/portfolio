@@ -19,14 +19,19 @@ const About = () => {
           <h3 className="text-4xl py-2 text-black font-medium ">
             {userData.designation}
           </h3>
-          <p className="md:p-0 p-4">{userData.about.description}</p>
+          <p className="md:p-0 p-4 mb-8">{userData.about.description}</p>
+          <div className="flex justify-center">
+            <a
+              className="bg-transparent hover:bg-blue-500 text-black font-semibold hover:text-white py-2 px-4 border border-black hover:border-transparent rounded
+        "
+              href="/cv.pdf"
+              download="cv"
+            >
+              Download CV
+            </a>
+          </div>
         </div>
 
-        {/* <div className="text-5xl flex justify-center gap-16 py-3 text-gray-600 dark:text-gray-400">
-          <AiFillTwitterCircle />
-          <AiFillLinkedin />
-          <AiFillYoutube />
-        </div> */}
         <div className="bg-gradient-to-b from-teal-500 h-80 md:h-96 md:mt-20 md:w-96 mx-auto overflow-hidden relative rounded-full w-80">
           <img src="https://avatars.githubusercontent.com/u/81272344?v=4" />
         </div>

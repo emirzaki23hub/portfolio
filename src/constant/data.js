@@ -2,15 +2,16 @@ const userData = {
   githubUsername: "emirzaki23hub",
   name: "Muhammad Emirzaki",
   designation: "Front End Developer",
-  avatarUrl: "/avatar.png",
-  email: "manuarorawork@gmail.com",
-  phone: "+6287889445946",
-  address: "Jaipur, Rajasthan, India.",
   projects: [
     {
       title: "Solbuss",
       link: "https://solbuss.co.id",
       imgUrl: "/solbuss.png",
+    },
+    {
+      title: "MovieList",
+      link: "https://benevolent-piroshki-64b088.netlify.app/",
+      imgUrl: "/movielist.png",
     },
   ],
   about: {

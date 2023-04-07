@@ -10,7 +10,7 @@ export default function Projects() {
         </h1>
 
         {/* Grid starts here */}
-        <div className="grid grid-cols-1  ">
+        <div className="grid grid-cols-2 gap-4 ">
           {userData.projects.map((proj, idx) => (
             <ProjectCard
               title={proj.title}
