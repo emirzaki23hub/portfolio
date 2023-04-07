@@ -10,7 +10,7 @@ export default function Projects() {
         </h1>
 
         {/* Grid starts here */}
-        <div className="grid grid-cols-2 gap-4 ">
+        <div className="gap-4 grid grid-cols-1 lg:grid-cols-2 lg:mx-0 mx-4">
           {userData.projects.map((proj, idx) => (
             <ProjectCard
               title={proj.title}
@@ -40,9 +40,9 @@ const ProjectCard = ({ title, link, imgUrl, number }) => {
         <h1 className="absolute top-10 left-10 text-gray-50 font-bold text-xl bg-red-500 rounded-md px-2">
           {title}
         </h1>
-        {/* <h1 className="absolute bottom-10 left-10 text-black font-bold text-xl">
+        <h1 className="absolute bottom-10 left-10 text-black font-bold text-xl">
           {number.length === 1 ? "0" + number : number}
-        </h1> */}
+        </h1>
       </div>
     </a>
   );
