@@ -17,7 +17,7 @@ const Navbar = () => {
           onClick={() => {
             setOpen(!open);
           }}
-          className="flex items-center px-3 py-2 border rounded text-black border-black"
+          className="items-center px-3 py-2 border rounded text-black border-black"
         >
           <svg
             className="fill-current h-4 w-full"
