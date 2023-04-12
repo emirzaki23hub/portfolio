@@ -4,6 +4,11 @@ const userData = {
   designation: "Front End Developer",
   projects: [
     {
+      title: "Graphcms",
+      link: "https://cmb-blog.vercel.app/",
+      imgUrl: "/graphcms.png",
+    },
+    {
       title: "Solbuss",
       link: "https://solbuss.co.id",
       imgUrl: "/solbuss.png",
