@@ -38,6 +38,11 @@ function valueAt(progress, keyframes) {
  * Analog gauge, styled after a motorcycle tachometer.
  * On mount, blips the throttle — two quick revs toward redline before
  * settling on `value` — rather than a single smooth sweep.
+ *
+ * Pass `avatarSrc` to ride a small circular photo at the tip of the
+ * needle — like a charm/pin — instead of a plain needle tip. It stays
+ * upright (counter-rotated) as the needle sweeps, and lands pointing
+ * at the final reading once the gauge settles.
  */
 export default function SpeedGauge({
   value = 78,
@@ -46,6 +51,8 @@ export default function SpeedGauge({
   unit = "%",
   isDay = false,
   start = true,
+  avatarSrc = null,
+  avatarAlt = "",
 }) {
   const [liveValue, setLiveValue] = useState(0);
   const [revving, setRevving] = useState(true);
@@ -83,11 +90,15 @@ export default function SpeedGauge({
   const dimTick = isDay ? "#0B0D0F66" : "#8B9198";
   const textColor = isDay ? "#0B0D0F" : "#E8E6E1";
   const isRedlining = liveValue / max > 0.85;
+  const needleColor = revving && isRedlining ? "#FF4D23" : "#C9FF3D";
+  const hasAvatar = Boolean(avatarSrc);
+  const needleLength = hasAvatar ? 52 : 60;
 
   return (
     <div className="relative w-64 h-64 md:w-80 md:h-80 mx-auto select-none">
       <svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
         <circle cx="100" cy="100" r="94" fill={faceColor} stroke={ringColor} strokeWidth="1.5" />
+
         {ticks.map((i) => {
           const tickAngle = -120 + i * 20;
           const isRedline = i >= 10;
@@ -112,23 +123,55 @@ export default function SpeedGauge({
             />
           );
         })}
-        <line
-          x1="100"
-          y1="100"
-          x2={100 + 60 * Math.sin((angle * Math.PI) / 180)}
-          y2={100 - 60 * Math.cos((angle * Math.PI) / 180)}
-          stroke={revving && isRedlining ? "#FF4D23" : "#C9FF3D"}
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
+
+        {/* Needle group: rotates around the hub. The avatar charm sits in a
+            nested group that counter-rotates, so the photo always stays
+            upright while it travels with the needle tip. */}
+        <g style={{ transform: `rotate(${angle}deg)`, transformOrigin: "100px 100px" }}>
+          <line
+            x1="100"
+            y1="100"
+            x2="100"
+            y2={100 - needleLength}
+            stroke={needleColor}
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          {hasAvatar && (
+            <g
+              style={{
+                transform: `translate(100px, ${100 - needleLength}px) rotate(${-angle}deg)`,
+                transformOrigin: "0px 0px",
+              }}
+            >
+              <defs>
+                <clipPath id="needle-avatar-clip">
+                  <circle cx="0" cy="0" r="15" />
+                </clipPath>
+              </defs>
+              <circle cx="0" cy="0" r="17" fill={faceColor} stroke={needleColor} strokeWidth="2" />
+              <image
+                href={avatarSrc}
+                x="-15"
+                y="-15"
+                width="30"
+                height="30"
+                preserveAspectRatio="xMidYMid slice"
+                clipPath="url(#needle-avatar-clip)"
+              />
+            </g>
+          )}
+        </g>
+
         <circle cx="100" cy="100" r="6" fill={textColor} />
       </svg>
+
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-9 md:pb-11 pointer-events-none">
         <span
           className="font-mono text-3xl md:text-4xl tabular-nums"
           style={{ color: revving && isRedlining ? "#FF4D23" : textColor }}
         >
-          {displayValue}
+          {/* {displayValue} */}
           {unit}
         </span>
         <span

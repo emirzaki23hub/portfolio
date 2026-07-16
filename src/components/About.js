@@ -63,7 +63,7 @@ const About = ({ isDay, introReady = true }) => {
           </a>
         </div>
 
-        <div className="flex flex-col items-center gap-8">
+        <div className="flex flex-col items-center">
           <SpeedGauge
             isDay={isDay}
             start={introReady}
@@ -71,14 +71,9 @@ const About = ({ isDay, introReady = true }) => {
             max={100}
             unit=""
             label={`${userData.yearsExperience}+ YRS EXPERIENCE`}
+            avatarSrc="/me.png"
+            avatarAlt="Muhammad Emirzaki"
           />
-          <div className="w-full max-w-xs aspect-square rounded-full overflow-hidden border-2 border-hairline">
-            <img
-              src="/me.png"
-              alt="Muhammad Emirzaki"
-              className="w-full h-full object-cover"
-            />
-          </div>
         </div>
       </div>
     </section>
