@@ -1,133 +1,131 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const Navbar = () => {
+const links = [
+  { href: "#About", id: "About", label: "Profile" },
+  { href: "#Projects", id: "Projects", label: "Garage" },
+  { href: "#Experience", id: "Experience", label: "Service Log" },
+  { href: "#Repository", id: "Repository", label: "Telemetry" },
+];
+
+const Navbar = ({ isDay, onToggleMode }) => {
   const [open, setOpen] = useState(false);
-  return (
-    <nav className="flex mb-0 lg:-mb-12 items-center justify-between flex-wrap container mx-auto p-6">
-      {/* <div className="flex md:flex-row justify-between items-center w-full"> */}
-      <div className="flex flex-col">
-        <img
-          className="h-16"
-          src="https://upload.wikimedia.org/wikipedia/en/6/60/No_Picture.jpg"
-        />
-      </div>
-      {/* <div className="space-x-8 md:block"> */}
-      <div className="block lg:hidden">
-        <button
-          onClick={() => {
-            setOpen(!open);
-          }}
-          className="items-center px-3 py-2 border rounded text-black border-black"
-        >
-          <svg
-            className="fill-current h-4 w-full"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <title>Menu</title>
-            <path
-              className={`${open ? "hidden" : "block"}`}
-              d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"
-            />
+  const [activeId, setActiveId] = useState(links[0].id);
 
-            <path
-              clipRule="evenodd"
-              fillRule="evenodd"
-              className={`${open ? "block" : "hidden"}`}
-              d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-            />
-          </svg>
-        </button>
-      </div>
-      <div
-        className={`${
-          open ? "block border-b" : "hidden"
-        }  w-full lg:block lg:border-none lg:items-center lg:w-auto `}
-      >
-        <div className="text-base lg:flex-grow">
-          <a
-            href="#About"
-            className="block mt-4 lg:inline-block lg:mt-0 text-black hover:underline mr-4"
+  const bg = isDay ? "bg-day/90" : "bg-asphalt/90";
+  const text = isDay ? "text-asphalt" : "text-paper";
+  const border = isDay ? "border-asphalt/10" : "border-hairline";
+  const muted = isDay ? "text-asphalt/60" : "text-muted";
+
+  useEffect(() => {
+    const sections = links
+      .map((link) => document.getElementById(link.id))
+      .filter(Boolean);
+    if (!sections.length || !("IntersectionObserver" in window)) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <nav
+      className={`sticky top-0 z-50 backdrop-blur border-b ${bg} ${border} font-mono`}
+    >
+      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="#" className={`flex items-center gap-2 text-xs tracking-[0.3em] ${text}`}>
+          <span className="w-2 h-2 rounded-full bg-redline" />
+          M.EMIRZAKI
+        </a>
+
+        <div className="hidden lg:flex items-center gap-8">
+          {links.map((link) => {
+            const isActive = activeId === link.id;
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                aria-current={isActive ? "true" : undefined}
+                className={`relative text-[11px] tracking-[0.2em] uppercase transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-redline after:transition-all after:duration-300 ${
+                  isActive
+                    ? `${text} after:w-full`
+                    : `${muted} hover:${isDay ? "text-asphalt" : "text-paper"} after:w-0 hover:after:w-full`
+                }`}
+              >
+                <span className={isActive ? "text-lime mr-1" : "text-redline mr-1"}>·</span>
+                {link.label}
+              </a>
+            );
+          })}
+          <HeadlightToggle isDay={isDay} onToggle={onToggleMode} />
+        </div>
+
+        <div className="flex items-center gap-4 lg:hidden">
+          <HeadlightToggle isDay={isDay} onToggle={onToggleMode} compact />
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+            className={`p-2 border rounded ${border} ${text}`}
           >
-            About
-          </a>
-          <a
-            href="#Projects"
-            className="block mt-4 lg:inline-block lg:mt-0 text-black hover:underline mr-4"
-          >
-            Projects
-          </a>
-          <a
-            href="#Experience"
-            className="block mt-4 lg:inline-block lg:mt-0 text-black hover:underline mr-4"
-          >
-            Experience
-          </a>
-          <a
-            href="#Repository"
-            className="block mt-4 lg:inline-block lg:mt-0 text-black hover:underline mr-4"
-          >
-            Repository
-          </a>
+            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+              {open ? (
+                <path d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" />
+              ) : (
+                <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
-      {/* </div> */}
-      {/* </div> */}
+
+      {open && (
+        <div className={`lg:hidden border-t ${border} px-6 py-4 flex flex-col gap-4`}>
+          {links.map((link) => {
+            const isActive = activeId === link.id;
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className={`text-xs tracking-[0.2em] uppercase ${isActive ? text : muted}`}
+              >
+                <span className={isActive ? "text-lime mr-2" : "text-redline mr-2"}>·</span>
+                {link.label}
+              </a>
+            );
+          })}
+        </div>
+      )}
     </nav>
-    // <nav className="flex container mx-auto items-center justify-between flex-wrap p-6">
-    //   <div className="flex items-center flex-shrink-0 text-white mr-6">
-    //     <img
-    //       className="h-10"
-    //       src="https://upload.wikimedia.org/wikipedia/en/6/60/No_Picture.jpg"
-    //     />
-    //   </div>
-    //   <div className="block lg:hidden">
-    //     <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-black hover:text-teal-400 hover:border-teal-400">
-    //       <svg
-    //         className="fill-current h-3 w-3"
-    //         viewBox="0 0 20 20"
-    //         xmlns="http://www.w3.org/2000/svg"
-    //       >
-    //         <title>Menu</title>
-    //         <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-    //       </svg>
-    //     </button>
-    //   </div>
-    //   <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-    //     <div className="lg:flex-grow">
-    //       <a href="#About" className="block mt-4 lg:inline-block lg:mt-0 mr-4">
-    //         About
-    //       </a>
-    //       <a
-    //         href="#Projects"
-    //         className="block mt-4 lg:inline-block mr-4 lg:mt-0"
-    //       >
-    //         Projects
-    //       </a>
-    //       <a
-    //         href="#Experience"
-    //         className="block mt-4 lg:inline-block lg:mt-0  mr-4"
-    //       >
-    //         Experience
-    //       </a>
-    //       <a
-    //         href="#Repository"
-    //         className="block mt-4 lg:inline-block mr-4 lg:mt-0"
-    //       >
-    //         Repository
-    //       </a>
-    //     </div>
-    //     <div>
-    //       <a
-    //         href="#"
-    //         className="inline-block text-sm px-4 py-2 leading-none border roundedhover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
-    //       >
-    //         Download
-    //       </a>
-    //     </div>
-    //   </div>
-    // </nav>
   );
 };
+
+const HeadlightToggle = ({ isDay, onToggle, compact }) => (
+  <button
+    onClick={onToggle}
+    aria-label="Toggle day/night mode"
+    title={isDay ? "Switch to night mode" : "Switch to day mode"}
+    className={`relative flex items-center ${compact ? "w-11 h-6" : "w-12 h-6"} rounded-full border transition-colors ${
+      isDay ? "border-asphalt/20 bg-asphalt/5" : "border-hairline bg-surface"
+    }`}
+  >
+    <span
+      className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform flex items-center justify-center text-[8px] ${
+        isDay ? "translate-x-0 bg-redline" : "translate-x-5 bg-lime"
+      }`}
+    >
+      {isDay ? "LO" : "HI"}
+    </span>
+  </button>
+);
 
 export default Navbar;

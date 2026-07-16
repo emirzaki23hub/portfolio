@@ -1,39 +1,84 @@
 import React from "react";
 import userData from "@/constant/data";
+import SpeedGauge from "@/components/SpeedGauge";
 
-import {
-  AiFillTwitterCircle,
-  AiFillLinkedin,
-  AiFillYoutube,
-} from "react-icons/ai";
-import { BsFillMoonStarsFill } from "react-icons/bs";
+const About = ({ isDay, introReady = true }) => {
+  const text = isDay ? "text-asphalt" : "text-paper";
+  const muted = isDay ? "text-asphalt/60" : "text-muted";
+  const border = isDay ? "border-asphalt/10" : "border-hairline";
 
-const About = () => {
   return (
-    <section className="md:py-20">
-      <div className="text-center items-center grid grid-cols-1 md:grid-cols-2 gap-4  container mx-auto">
+    <section id="About" className="relative py-20 md:py-28 overflow-hidden dash-grid">
+      <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div>
-          <h2 className="text-5xl py-2 text-black font-medium md:text-6xl">
-            Hi, I am Emir!
+          <p className={`font-mono text-[11px] tracking-[0.3em] mb-6 reveal-up ${muted}`}>
+            RIDER PROFILE
+          </p>
+          <h1
+            className={`font-display font-bold text-5xl md:text-7xl leading-[0.95] reveal-up ${text}`}
+            style={{ animationDelay: "80ms" }}
+          >
+            Muhammad
+            <br />
+            Emirzaki
+          </h1>
+          <h2
+            className={`font-mono text-sm md:text-base tracking-[0.15em] uppercase mt-4 reveal-up ${muted}`}
+            style={{ animationDelay: "180ms" }}
+          >
+            {userData.designation} · {userData.base}
           </h2>
-          <h3 className="text-4xl py-2 text-black font-medium ">
-            {userData.designation}
-          </h3>
-          <p className="md:p-0 p-4 mb-8">{userData.about.description}</p>
-          <div className="flex justify-center">
-            <a
-              className="bg-transparent hover:bg-blue-500 text-black font-semibold hover:text-white py-2 px-4 border border-black hover:border-transparent rounded
-        "
-              href="/cv.pdf"
-              download="cv"
-            >
-              Download CV
-            </a>
-          </div>
+
+          <p
+            className={`mt-8 max-w-lg leading-relaxed reveal-up ${isDay ? "text-asphalt/80" : "text-paper/80"}`}
+            style={{ animationDelay: "280ms" }}
+          >
+            {userData.about.description}
+          </p>
+
+          <dl
+            className={`mt-10 grid grid-cols-2 gap-y-4 max-w-md border-t ${border} pt-6 reveal-up`}
+            style={{ animationDelay: "380ms" }}
+          >
+            <dt className={`font-mono text-[10px] tracking-[0.2em] ${muted}`}>BASE</dt>
+            <dd className={`font-mono text-sm ${text}`}>{userData.base}</dd>
+            <dt className={`font-mono text-[10px] tracking-[0.2em] ${muted}`}>STACK</dt>
+            <dd className={`font-mono text-sm ${text} col-span-1`}>
+              {userData.stack.slice(0, 3).join(" / ")}
+            </dd>
+          </dl>
+
+          <a
+            href="/cv.pdf"
+            download="cv"
+            style={{ animationDelay: "480ms" }}
+            className={`inline-flex items-center gap-3 mt-10 px-6 py-3 font-mono text-xs tracking-[0.2em] uppercase border transition-colors reveal-up ${
+              isDay
+                ? "border-asphalt/20 text-asphalt hover:bg-asphalt hover:text-day"
+                : "border-hairline text-paper hover:bg-paper hover:text-asphalt"
+            }`}
+          >
+            Download CV
+            <span className="text-redline">→</span>
+          </a>
         </div>
 
-        <div className="bg-gradient-to-b from-teal-500 h-80 md:h-96 md:mt-20 md:w-96 mx-auto overflow-hidden relative rounded-full w-80">
-          <img src="https://avatars.githubusercontent.com/u/81272344?v=4" />
+        <div className="flex flex-col items-center gap-8">
+          <SpeedGauge
+            isDay={isDay}
+            start={introReady}
+            value={userData.yearsExperience * 25}
+            max={100}
+            unit=""
+            label={`${userData.yearsExperience}+ YRS EXPERIENCE`}
+          />
+          <div className="w-full max-w-xs aspect-square rounded-full overflow-hidden border-2 border-hairline">
+            <img
+              src="/me.png"
+              alt="Muhammad Emirzaki"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       </div>
     </section>

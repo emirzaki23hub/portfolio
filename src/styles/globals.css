@@ -2,16 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-/**
- * Smooth scrolling inside an element
- */
-#my-element {
+html {
   scroll-behavior: smooth;
 }
 
-/**
- * Smooth scrolling on the whole document
- */
-html {
-  scroll-behavior: smooth;
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hairline scan texture used behind the hero — subtle, not decorative noise */
+.dash-grid {
+  background-image:
+    linear-gradient(to right, rgba(139, 145, 152, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(139, 145, 152, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-up {
+  animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-up {
+    animation: none;
+  }
 }
