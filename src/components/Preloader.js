@@ -81,12 +81,6 @@ export default function Preloader({ isDay, onDone }) {
         </div>
       </div>
 
-      {/* Seam flash — brief lime line where the panels split apart */}
-      <div
-        className={`absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-lime transition-opacity duration-300 ${
-          revealing ? "opacity-100" : "opacity-0"
-        }`}
-      />
     </div>
   );
 }

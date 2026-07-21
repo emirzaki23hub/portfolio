@@ -14,23 +14,34 @@ export default function Home({ repositories }) {
   const [introReady, setIntroReady] = useState(false);
   const [userOverride, setUserOverride] = useState(false);
 
-  // Read the device's color-scheme preference once on mount. Default stays
-  // "night" (asphalt) unless the OS/browser explicitly prefers light — this
-  // happens while the preloader still covers the screen, so there's no
-  // visible flash either way.
+  // Initialize theme from localStorage if available, otherwise follow OS.
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
+
+    const storedTheme = window.localStorage.getItem("theme");
+    if (storedTheme === "light" || storedTheme === "dark") {
+      setIsDay(storedTheme === "light");
+      setUserOverride(true);
+      return;
+    }
+
     const media = window.matchMedia("(prefers-color-scheme: light)");
     setIsDay(media.matches);
 
     const handleChange = (e) => {
-      // Only follow the OS live if the person hasn't manually flipped the
-      // headlight switch themselves — a manual choice should stick.
-      if (!userOverride) setIsDay(e.matches);
+      if (!window.localStorage.getItem("theme")) {
+        setIsDay(e.matches);
+      }
     };
+
     media.addEventListener("change", handleChange);
     return () => media.removeEventListener("change", handleChange);
-  }, [userOverride]);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !userOverride) return;
+    window.localStorage.setItem("theme", isDay ? "light" : "dark");
+  }, [isDay, userOverride]);
 
   const handleToggle = () => {
     setUserOverride(true);
