@@ -11,15 +11,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        asphalt: "#0B0D0F",
-        surface: "#15181B",
-        surface2: "#1D2124",
-        paper: "#E8E6E1",
-        muted: "#8B9198",
-        redline: "#FF4D23",
-        lime: "#C9FF3D",
-        hairline: "#2A2E32",
-        day: "#F1EEE6",
+        navy: "#0A0F1A",
+        surface: "#0F1628",
+        surface2: "#151E36",
+        paper: "#E2E8F0",
+        muted: "#8895A7",
+        accent: "#14B8A6",
+        sky: "#38BDF8",
+        hairline: "#1E2A45",
+        day: "#F0F4F8",
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],

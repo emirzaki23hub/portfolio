@@ -1,0 +1,2 @@
+[permissions]
+allow = ["explore", "Bash(cd /Users/bitgroup/Desktop/Project/portfolio && npm run dev 2>&1)"]
