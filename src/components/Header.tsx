@@ -29,19 +29,14 @@ export default function Header({ activeSection, setActiveSection }: HeaderProps)
   const scrollToSection = (id: string) => {
     setIsOpen(false);
     setActiveSection(id);
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 80; // height of fixed header
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    }
+    requestAnimationFrame(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 80;
+        const top = element.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    });
   };
 
   return (
@@ -127,9 +122,10 @@ export default function Header({ activeSection, setActiveSection }: HeaderProps)
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
             className="md:hidden bg-navy border-b border-hairline backdrop-blur-lg overflow-hidden"
             id="mobile-drawer"
           >
