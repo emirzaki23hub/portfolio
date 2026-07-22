@@ -70,7 +70,7 @@ export default function Home() {
     };
   }, []);
 
-  const siteUrl = "https://emirzaki.dev";
+  const siteUrl = "https://www.emirzaki.my.id";
   const siteName = "Emirzaki — Frontend Engineer & Portfolio";
   const title = "Emirzaki | Frontend Engineer & Web Developer";
   const description =
