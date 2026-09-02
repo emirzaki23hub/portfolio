@@ -5,12 +5,19 @@ import Header from "../components/Header";
 import Hero from "../components/Hero";
 import Footer from "../components/Footer";
 import Preloader from "../components/Preloader";
+import { PortfolioProvider } from "@/context/portfolio";
+import { getPortfolioData, PortfolioData } from "@/lib/strapi";
 
 const About = dynamic(() => import("../components/About"), { ssr: true });
 const Projects = dynamic(() => import("../components/Projects"), { ssr: true });
 const Contact = dynamic(() => import("../components/Contact"), { ssr: true });
 
-export default function Home() {
+export async function getStaticProps() {
+  const data = await getPortfolioData();
+  return { props: { data }, revalidate: 60 };
+}
+
+export default function Home({ data }: { data: PortfolioData }) {
   const [activeSection, setActiveSection] = useState("hero");
   const scrollingRef = useRef(false);
 
@@ -78,7 +85,7 @@ export default function Home() {
   const ogImage = `${siteUrl}/og-image.png`;
 
   return (
-    <>
+    <PortfolioProvider value={data}>
       <Head>
         {/* Page Title */}
         <title>{title}</title>
@@ -150,7 +157,7 @@ export default function Home() {
 
       <Footer />
     </div>
-    </>
+    </PortfolioProvider>
   );
 }
 

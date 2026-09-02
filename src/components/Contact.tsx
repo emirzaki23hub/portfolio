@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Github, Linkedin, Copy, Check, MessageSquare, ArrowUpRight } from "lucide-react";
-import { portfolioData } from "../data";
+import { usePortfolio } from "@/context/portfolio";
 
 export default function Contact() {
-  const { email, whatsapp, github, linkedin } = portfolioData.personalInfo;
+  const { email, whatsapp, github, linkedin } = usePortfolio().personalInfo;
 
   const [copied, setCopied] = useState(false);
 

@@ -1,9 +1,9 @@
 import React from "react";
-import { portfolioData } from "../data";
+import { usePortfolio } from "@/context/portfolio";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const { name } = portfolioData.personalInfo;
+  const { name } = usePortfolio().personalInfo;
 
   return (
     <footer className="py-12 bg-navy border-t border-hairline text-center relative z-10">

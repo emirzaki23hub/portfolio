@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import * as Icons from "lucide-react";
-import { portfolioData, Skill } from "../data";
+import { Skill } from "../data";
+import { usePortfolio } from "@/context/portfolio";
 
 export default function About() {
+  const portfolioData = usePortfolio();
   const { detailedBio } = portfolioData.personalInfo;
   const { skills, experiences, education } = portfolioData;
 

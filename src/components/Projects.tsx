@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { ExternalLink, Github, X, Code2, Layers, Cpu, ArrowUpRight } from "lucide-react";
-import { portfolioData, Project } from "../data";
+import { Project } from "../data";
+import { usePortfolio } from "@/context/portfolio";
 
 export default function Projects() {
-  const { projects } = portfolioData;
+  const { projects } = usePortfolio();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [filter, setFilter] = useState<"All" | "Frontend" | "Fullstack" | "Creative">("All");
 

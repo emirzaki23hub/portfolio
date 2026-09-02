@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
 import { ArrowUpRight, Github, Linkedin, Mail, MapPin, Sparkles, MessageSquare, ArrowDown } from "lucide-react";
-import { portfolioData } from "../data";
+import { usePortfolio } from "@/context/portfolio";
 
 interface HeroProps {
   setActiveSection: (section: string) => void;
 }
 
 export default function Hero({ setActiveSection }: HeroProps) {
+  const portfolioData = usePortfolio();
   const { name, title, subtitle, location, github, linkedin, email, whatsapp } = portfolioData.personalInfo;
   const spotlightProject = portfolioData.projects[0]; // Spotlight the first project
 
