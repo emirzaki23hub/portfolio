@@ -4,13 +4,9 @@ const STRAPI_URL =
   process.env.NEXT_PUBLIC_STRAPI_URL?.replace(/\/$/, "") ||
   "https://cms.strapi-emir.my.id";
 
-const SITE_SLUG = process.env.NEXT_PUBLIC_STRAPI_SITE_SLUG || "emirzaki";
-
-type StrapiSingleResponse<T> = { data: T | null };
-
-async function strapiGet<T>(path: string): Promise<T | null> {
+async function strapiGet<T>(query: string): Promise<T | null> {
   try {
-    const res = await fetch(`${STRAPI_URL}/api/${path}`, {
+    const res = await fetch(`${STRAPI_URL}/api/${query}`, {
       headers: {
         "Content-Type": "application/json",
         ...(process.env.STRAPI_API_TOKEN
@@ -25,7 +21,7 @@ async function strapiGet<T>(path: string): Promise<T | null> {
   }
 }
 
-/* ---------- media helpers ---------- */
+/* ---------- helpers ---------- */
 
 function mediaUrl(media: any): string | undefined {
   const url: string | undefined = media?.url ?? media?.data?.attributes?.url;
@@ -33,7 +29,13 @@ function mediaUrl(media: any): string | undefined {
   return url.startsWith("http") ? url : `${STRAPI_URL}${url}`;
 }
 
-/* ---------- mappers ---------- */
+function formatMonth(d?: string | null): string {
+  if (!d) return "";
+  const date = new Date(d);
+  return isNaN(date.getTime())
+    ? ""
+    : date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+}
 
 const CATEGORY_MAP: Record<string, Project["category"]> = {
   frontend: "Frontend",
@@ -42,32 +44,29 @@ const CATEGORY_MAP: Record<string, Project["category"]> = {
   creative: "Creative",
 };
 
+/* ---------- mappers ---------- */
+
 function mapProject(row: any, fallbackById: Map<string, Project>): Project {
   const key = String(row.slug ?? row.id);
   const fb = fallbackById.get(key);
-  const services: string[] = Array.isArray(row.services) ? row.services : [];
   return {
     id: key,
     title: row.title ?? fb?.title ?? "",
-    description: row.description ?? fb?.description ?? "",
-    longDescription: row.longDescription ?? fb?.longDescription,
-    image: mediaUrl(row.cover) ?? fb?.image,
-    tech: services.length ? services : fb?.tech ?? [],
+    description: row.shortDescription ?? fb?.description ?? "",
+    longDescription: row.fullDescription ?? fb?.longDescription,
+    image: mediaUrl(row.featuredImage) ?? fb?.image,
+    tech:
+      Array.isArray(row.techStack) && row.techStack.length
+        ? row.techStack
+        : fb?.tech ?? [],
     category:
-      CATEGORY_MAP[String(services[0] ?? "").toLowerCase()] ??
+      CATEGORY_MAP[String(row.category ?? "").toLowerCase()] ??
       fb?.category ??
       "Frontend",
-    liveUrl: row.url ?? fb?.liveUrl,
+    liveUrl: row.liveUrl ?? fb?.liveUrl,
     githubUrl: row.githubUrl ?? fb?.githubUrl,
-    featured: row.featured ?? fb?.featured ?? false,
+    featured: row.isFeatured ?? fb?.featured ?? false,
   };
-}
-
-function formatMonth(d?: string | null): string {
-  if (!d) return "";
-  const date = new Date(d);
-  if (isNaN(date.getTime())) return "";
-  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
 function mapExperience(row: any): Experience {
@@ -86,8 +85,9 @@ function mapSkills(rows: any[]): Skill[] {
   const out: Skill[] = [];
   for (const cat of rows) {
     const category = cat.name as Skill["category"];
-    const skills: string[] = Array.isArray(cat.skills) ? cat.skills : [];
-    for (const name of skills) out.push({ name, category, level: 4 });
+    for (const name of Array.isArray(cat.skills) ? cat.skills : []) {
+      out.push({ name, category, level: 4 });
+    }
   }
   return out;
 }
@@ -97,16 +97,19 @@ function mapSkills(rows: any[]): Skill[] {
 export type PortfolioData = typeof portfolioData;
 
 export async function getPortfolioData(): Promise<PortfolioData> {
-  const res = await strapiGet<StrapiSingleResponse<any>>(
-    `sites/by-slug/${SITE_SLUG}`
-  );
-  const site = res?.data;
+  const [profileRes, projRes, expRes, skillRes] = await Promise.all([
+    strapiGet<any>(`emirzaki-profile?populate=*`),
+    strapiGet<any>(
+      `emirzaki-projects?populate=featuredImage&sort=order:asc&pagination[pageSize]=100`
+    ),
+    strapiGet<any>(`emirzaki-experiences?sort=order:asc`),
+    strapiGet<any>(`emirzaki-skills?sort=order:asc`),
+  ]);
 
   const data: PortfolioData = JSON.parse(JSON.stringify(portfolioData));
-  if (!site) return data; // CMS down / not found -> static fallback
 
-  // personalInfo
-  const p = site.profile;
+  // personalInfo <- emirzaki-profile single type
+  const p = profileRes?.data;
   if (p) {
     data.personalInfo = {
       ...data.personalInfo,
@@ -125,36 +128,23 @@ export async function getPortfolioData(): Promise<PortfolioData> {
     };
   }
 
-  // projects: Strapi first, static entries fill any gaps (by id/slug)
-  const projectRows: any[] = Array.isArray(site.projects) ? site.projects : [];
+  // projects
+  const projectRows: any[] = projRes?.data ?? [];
   if (projectRows.length) {
     const fallbackById = new Map(portfolioData.projects.map((pr) => [pr.id, pr]));
-    const fromStrapi = [...projectRows]
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .map((r) => mapProject(r, fallbackById));
-    const strapiIds = new Set(fromStrapi.map((pr) => pr.id));
-    const extras = portfolioData.projects.filter((pr) => !strapiIds.has(pr.id));
+    const fromStrapi = projectRows.map((r) => mapProject(r, fallbackById));
+    const ids = new Set(fromStrapi.map((pr) => pr.id));
+    const extras = portfolioData.projects.filter((pr) => !ids.has(pr.id));
     data.projects = [...fromStrapi, ...extras];
   }
 
   // experiences
-  const expRows: any[] = Array.isArray(site.experiences) ? site.experiences : [];
-  if (expRows.length) {
-    data.experiences = [...expRows]
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .map(mapExperience);
-  }
+  const expRows: any[] = expRes?.data ?? [];
+  if (expRows.length) data.experiences = expRows.map(mapExperience);
 
   // skills
-  const skillRows: any[] = Array.isArray(site.skillCategories)
-    ? site.skillCategories
-    : [];
-  if (skillRows.length) {
-    data.skills = mapSkills(
-      [...skillRows].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-    );
-  }
+  const skillRows: any[] = skillRes?.data ?? [];
+  if (skillRows.length) data.skills = mapSkills(skillRows);
 
-  // strip `undefined` so Next.js can serialize the props
   return JSON.parse(JSON.stringify(data)) as PortfolioData;
 }
